@@ -1,3 +1,4 @@
+
 const TELEFONO_LOCAL = "5493874848698"; // Reemplazar por el número real del local[cite: 5]
 function getExtraValue(o, p, activeRadioNames) {
   if (typeof o.extra === 'object' && o.extra !== null) { //[cite: 5]
@@ -122,7 +123,7 @@ const MENU = [ //[cite: 5]
   } //[cite: 5]
   , //[cite: 5]
    //[cite: 5]
-  {id:3,cat:'Pizzas',name:'Pizza Muzzarella',desc:'Salsa de tomate, muzzarella y aceitunas',price:9000.00,img:'image/pizza.png', //[cite: 5]
+  {id:3,cat:'Pizzas',name:'Pizzas',desc:'Salsa de tomate, muzzarella y aceitunas',price:9000.00,img:'image/pizza.png', //[cite: 5]
     groups:[ //[cite: 5]
       {name:'tipos',type:'radio',req:false,opts:[ //[cite: 5]
         {name:'mozzarella',extra:0.00},{name:'napolitana',extra:500.00},{name:'fugazzeta',extra:500.00}, //[cite: 5]
@@ -182,7 +183,7 @@ const MENU = [ //[cite: 5]
     id: 105, //[cite: 5]
     cat: 'Promos', //[cite: 5]
     name: '2 Hamburguesas bacon', //[cite: 5]
-    desc: 'BACON, CHEDDAR Y HUE', //[cite: 5]
+    desc: 'BACON, CHEDDAR Y HUEVO', //[cite: 5]
     price: 17000, //[cite: 5]
     img: 'image/burguer1.png', //[cite: 5]
     groups: [] //[cite: 5]
@@ -253,6 +254,7 @@ function openProd(id){
   document.getElementById('prod-overlay').classList.add('open'); //[cite: 5]
   updateTotal(); //[cite: 5]
 }
+
 function renderModal(){
   const p = currentProd;
   let html = `
@@ -312,16 +314,31 @@ function renderModal(){
     html += '</div>';
   });
 
-// El bloque de aderezos no se genera si el producto es de la categoría Pizzas o Empanadas
+  // El bloque de aderezos estructurado con opciones múltiples (Checkboxes nativos ocultos con estilos de la app)
   if (p.cat !== 'Pizzas' && p.cat !== 'Empanadas') {
+    const listadoAderezos = ['Apio','Mayonesa','Mostaza','AJi','Ketchup','Barbacoa','Parmesano','Cheddar', 'Sin aderezos'];
+    
     html += `<div class="opt-group">
-      <div class="opt-group-title">Aderezos</div>
-      <textarea class="notes-area" id="prod-notes" rows="2" placeholder="Ej: ketchup, mayonesa, y apio"></textarea>
-    </div>`;
+      <div class="opt-group-title">Elegí tus Aderezos</div>`;
+      
+    listadoAderezos.forEach((aderezo, idx) => {
+      html += `
+        <label class="opt-item" style="display: flex; width: 100%; cursor: pointer;">
+          <div class="opt-item-left">
+            <input type="checkbox" name="aderezos-seleccionados" value="${aderezo}" style="margin-right: 8px; width: 16px; height: 16px; cursor: pointer;">
+            <span class="opt-name">${aderezo}</span>
+          </div>
+        </label>
+      `;
+    });
+    
+    html += `</div>`;
   }
   
   document.getElementById('mod-body').innerHTML = html;
 }
+
+
 function changeQty(d){
   currentQty = Math.max(1,currentQty+d); //[cite: 5]
   document.getElementById('qty-display').textContent = currentQty; //[cite: 5]
@@ -426,7 +443,6 @@ function closeProdForce(){
 
 function addToCart(){
   const p = currentProd;
-  const notes = document.getElementById('prod-notes')?.value||'';
   const opts = [];
   
   // 1. Mapear qué opción de tipo radio está activa en cada índice de grupo
@@ -442,15 +458,13 @@ function addToCart(){
 
   // 2. Recorrer y agregar solo los grupos que cumplen las condiciones de visibilidad
   p.groups.forEach((g, gi) => {
-    // Validar condicionales soloPara en cascada hacia atrás
     if (g.soloPara) {
       const cumpleCondicion = Object.keys(activeSelectionsByGroup).some(prevGIdx => {
         return parseInt(prevGIdx) < gi && g.soloPara.includes(activeSelectionsByGroup[prevGIdx]);
       });
-      if (!cumpleCondicion) return; // Si no cumple, ignora este grupo por completo
+      if (!cumpleCondicion) return; 
     }
 
-    // Prefijo para estéticos o nombres vacíos
     const groupLabel = g.name ? g.name + ': ' : '';
 
     if(g.type === 'radio'){
@@ -464,7 +478,15 @@ function addToCart(){
     }
   });
 
-  // 3. Insertar al carrito con el precio correctamente calculado
+  // 3. Capturar dinámicamente los aderezos seleccionados en el modal
+  const checkboxes = document.querySelectorAll('input[name="aderezos-seleccionados"]:checked');
+  const aderezosElegidos = Array.from(checkboxes).map(cb => cb.value);
+  
+  if (aderezosElegidos.length > 0) {
+    opts.push("Aderezos: " + aderezosElegidos.join(', '));
+  }
+
+  // 4. Insertar al carrito con el precio correctamente calculado
   cart.push({
     id: Date.now(),
     name: p.name,
@@ -473,7 +495,7 @@ function addToCart(){
     unitPrice: calcItemTotal() / currentQty,
     total: calcItemTotal(),
     opts,
-    notes
+    notes: '' // Se limpia la variable notes al procesarse ahora dentro de opts de forma explícita
   });
 
   updateCartCount();
