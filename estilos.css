@@ -347,3 +347,8 @@
   border-top: 1px solid var(--border);
   padding-top: 16px;
 }
+
+.opt-item input[type="checkbox"] {
+  accent-color: var(--navy);
+  transform: translateY(1px);
+}
