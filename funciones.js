@@ -312,10 +312,14 @@ function renderModal(){
     html += '</div>';
   });
 
-  html += `<div class="opt-group">
-    <div class="opt-group-title">Aderezos</div>
-    <textarea class="notes-area" id="prod-notes" rows="2" placeholder="Ej: ketchup, mayonesa, y apio"></textarea>
-  </div>`;
+// El bloque de aderezos no se genera si el producto es de la categoría Pizzas o Empanadas
+  if (p.cat !== 'Pizzas' && p.cat !== 'Empanadas') {
+    html += `<div class="opt-group">
+      <div class="opt-group-title">Aderezos</div>
+      <textarea class="notes-area" id="prod-notes" rows="2" placeholder="Ej: ketchup, mayonesa, y apio"></textarea>
+    </div>`;
+  }
+  
   document.getElementById('mod-body').innerHTML = html;
 }
 function changeQty(d){
