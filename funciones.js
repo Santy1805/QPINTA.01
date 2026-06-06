@@ -548,7 +548,7 @@ function renderCart(){
   html += `
     <div style="margin: 16px 0 12px 0; text-align: left;">
       <label for="cart-address" style="font-weight:700; font-size:14px; color:var(--navy); display:block; margin-bottom:6px;">Dirección de Entrega (Solo envios en Coronel Moldes):</label>
-      <input type="text" id="cart-address" class="phone-input" placeholder="Ej: Av. Belgrano 1234, Barrio Centro" value="${direccionEntrega}" oninput="direccionEntrega = this.value" style="width:100%; box-sizing:border-box;">
+      <input type="text" id="cart-address" class="phone-input" placeholder="Ej: Av. Belgrano 1234, Barrio Centro, familia Potuar, mi casa tiene una planta afuera " value="${direccionEntrega}" oninput="direccionEntrega = this.value" style="width:100%; box-sizing:border-box;">
     </div>
   `;
   
